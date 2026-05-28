@@ -1,7 +1,7 @@
 from __future__ import annotations
 from enum import Enum
 from typing import Optional, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 
 
@@ -23,7 +23,7 @@ class WorkflowType(str, Enum):
 
 
 class Workflow(BaseModel):
-    id: str = Field(default_factory=lambda: f"wf_{datetime.utcnow().timestamp()}")
+    id: str = Field(default_factory=lambda: f"wf_{datetime.now(timezone.utc).timestamp()}")
     name: str
     description: Optional[str] = None
     type: WorkflowType = WorkflowType.CUSTOM
@@ -32,8 +32,8 @@ class Workflow(BaseModel):
     nodes: list[dict[str, Any]] = Field(default_factory=list)
     edges: list[dict[str, Any]] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     created_by: Optional[str] = None
 
     def to_dict(self, *args, **kwargs):

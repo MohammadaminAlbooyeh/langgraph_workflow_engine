@@ -1,7 +1,6 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from backend.utils.logger import get_logger
-import time
 
 logger = get_logger(__name__)
 

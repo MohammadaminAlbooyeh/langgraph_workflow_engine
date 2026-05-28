@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Any
 from backend.utils.exceptions import InvalidGraphError
 
 
@@ -88,7 +87,7 @@ def validate_graph(nodes: list[dict], edges: list[dict]) -> list[str]:
             errors.append(f"Edge target '{edge['target_id']}' not found in nodes")
 
     try:
-        topsort = topological_sort(nodes, edges)
+        topological_sort(nodes, edges)
     except InvalidGraphError:
         cycles = find_cycles(edges)
         for cycle in cycles:

@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any
 from backend.langgraph_engine.core.graph_builder import GraphBuilder
 from backend.models.node import Node
 from backend.models.edge import Edge
-from config import langraph_config
 
 
 class GraphCompiler:

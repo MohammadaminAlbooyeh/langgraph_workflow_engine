@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, Optional
-from backend.utils.exceptions import InvalidGraphError
+from typing import Optional
 
 
 def validate_workflow(workflow_data: dict) -> list[str]:

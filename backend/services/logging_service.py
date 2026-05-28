@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Any
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)

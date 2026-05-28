@@ -1,9 +1,8 @@
 from __future__ import annotations
 from typing import Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from backend.models.execution import ExecutionResult, ExecutionStatus
 from backend.utils.logger import get_logger
-from backend.utils.decorators import measure_time
 
 logger = get_logger(__name__)
 
@@ -16,12 +15,12 @@ class NodeExecutor:
         inputs: dict[str, Any],
         context: Optional[dict] = None,
     ) -> ExecutionResult:
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         logger.info(f"Executing node {node_id}", node_id=node_id)
 
         try:
             output = await self._run_node(node_id, node_config, inputs, context or {})
-            duration = (datetime.utcnow() - start_time).total_seconds() * 1000
+            duration = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
 
             return ExecutionResult(
                 node_id=node_id,
@@ -31,7 +30,7 @@ class NodeExecutor:
                 duration_ms=duration,
             )
         except Exception as e:
-            duration = (datetime.utcnow() - start_time).total_seconds() * 1000
+            duration = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
             logger.error(f"Node {node_id} failed: {e}", exc_info=True)
             return ExecutionResult(
                 node_id=node_id,
@@ -63,7 +62,6 @@ class NodeExecutor:
 
     async def _handle_llm(self, node_id: str, config: dict, inputs: dict, context: dict) -> Any:
         prompt = config.get("prompt_template", "")
-        system_prompt = config.get("system_prompt", "")
         formatted = prompt.format(**inputs) if inputs else prompt
         return {"response": f"[LLM response for: {formatted[:50]}...]", "provider": config.get("provider", "openai")}
 

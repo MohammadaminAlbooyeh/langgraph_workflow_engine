@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -16,8 +16,8 @@ class CheckpointManager:
             "id": checkpoint_id,
             "execution_id": execution_id,
             "state": state.copy(),
-            "label": label or f"checkpoint_{datetime.utcnow().isoformat()}",
-            "timestamp": datetime.utcnow(),
+            "label": label or f"checkpoint_{datetime.now(timezone.utc).isoformat()}",
+            "timestamp": datetime.now(timezone.utc),
         }
         self._checkpoints.setdefault(execution_id, []).append(checkpoint)
         logger.info(f"Saved checkpoint {checkpoint_id} for execution {execution_id}")

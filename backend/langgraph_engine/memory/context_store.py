@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class ContextStore:
@@ -10,7 +10,7 @@ class ContextStore:
     def set(self, key: str, value: Any, ttl: Optional[int] = None):
         self._store[key] = {
             "value": value,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
             "ttl": ttl,
         }
 
@@ -19,7 +19,7 @@ class ContextStore:
         if entry is None:
             return default
         if entry["ttl"]:
-            age = (datetime.utcnow() - entry["timestamp"]).total_seconds()
+            age = (datetime.now(timezone.utc) - entry["timestamp"]).total_seconds()
             if age > entry["ttl"]:
                 del self._store[key]
                 return default

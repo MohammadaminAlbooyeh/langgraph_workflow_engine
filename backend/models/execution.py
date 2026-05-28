@@ -1,7 +1,7 @@
 from __future__ import annotations
 from enum import Enum
 from typing import Optional, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 
 
@@ -23,7 +23,7 @@ class ExecutionResult(BaseModel):
     error: Optional[str] = None
     duration_ms: float = 0.0
     tokens_used: Optional[int] = None
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class Execution(BaseModel):

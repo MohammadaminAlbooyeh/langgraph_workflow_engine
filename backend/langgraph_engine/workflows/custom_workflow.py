@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Any, Optional
 from backend.langgraph_engine.execution.executor import WorkflowExecutor
 from backend.models.execution import Execution
 from backend.utils.logger import get_logger

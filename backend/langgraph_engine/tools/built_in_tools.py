@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def current_datetime() -> str:
-    return datetime.utcnow().isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def calculate(expression: str) -> float:

@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Any, Optional
-from datetime import datetime
+from typing import Optional
+from datetime import datetime, timezone
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -18,7 +18,7 @@ class ApprovalManager:
             "node_id": node_id,
             "context": context or {},
             "status": "pending",
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(timezone.utc),
             "decided_at": None,
             "decided_by": None,
         }
@@ -30,7 +30,7 @@ class ApprovalManager:
         if not approval or approval["status"] != "pending":
             return False
         approval["status"] = "approved"
-        approval["decided_at"] = datetime.utcnow()
+        approval["decided_at"] = datetime.now(timezone.utc)
         approval["decided_by"] = user
         logger.info(f"Approval granted: {approval_id} by {user}")
         return True
@@ -40,7 +40,7 @@ class ApprovalManager:
         if not approval or approval["status"] != "pending":
             return False
         approval["status"] = "rejected"
-        approval["decided_at"] = datetime.utcnow()
+        approval["decided_at"] = datetime.now(timezone.utc)
         approval["decided_by"] = user
         approval["reason"] = reason
         logger.info(f"Approval rejected: {approval_id} by {user}")

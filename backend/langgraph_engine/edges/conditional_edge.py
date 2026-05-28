@@ -1,4 +1,4 @@
-from typing import Any, Optional, Callable
+from typing import Any, Optional
 from backend.langgraph_engine.edges.base_edge import BaseEdge
 from backend.models.edge import Edge, EdgeType, EdgeCondition
 

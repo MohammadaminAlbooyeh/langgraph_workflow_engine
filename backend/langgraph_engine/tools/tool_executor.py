@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any
 from backend.langgraph_engine.tools.tool_registry import ToolRegistry
 from backend.utils.logger import get_logger
 

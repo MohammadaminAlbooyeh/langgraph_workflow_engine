@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, String, Text, Float, Integer, DateTime, JSON, Enum as SAEnum
 from sqlalchemy.orm import DeclarativeBase
 from backend.models.workflow import WorkflowStatus, WorkflowType
@@ -23,8 +23,8 @@ class WorkflowModel(Base):
     nodes = Column(JSON, default=list)
     edges = Column(JSON, default=list)
     metadata_ = Column("metadata", JSON, default=dict)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     created_by = Column(String, nullable=True)
 
 

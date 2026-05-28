@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Any, Optional
 from langgraph.graph import StateGraph, END
 from backend.models.node import Node
 from backend.models.edge import Edge

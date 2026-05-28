@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Any, Optional
-from datetime import datetime
-from backend.models.execution import Execution, ExecutionStatus, ExecutionResult
+from datetime import datetime, timezone
+from backend.models.execution import Execution, ExecutionStatus
 from backend.langgraph_engine.core.graph_compiler import GraphCompiler
 from backend.langgraph_engine.core.state_management import StateManager
 from backend.langgraph_engine.execution.error_handler import ErrorHandler
@@ -33,7 +32,7 @@ class WorkflowExecutor:
         edge_models = [Edge(**e) for e in edges]
 
         execution.status = ExecutionStatus.RUNNING
-        execution.started_at = datetime.utcnow()
+        execution.started_at = datetime.now(timezone.utc)
 
         try:
             self._compiler.compile(node_models, edge_models)
@@ -43,7 +42,7 @@ class WorkflowExecutor:
 
             execution.status = ExecutionStatus.COMPLETED
             execution.outputs = result
-            execution.completed_at = datetime.utcnow()
+            execution.completed_at = datetime.now(timezone.utc)
             execution.duration_ms = (
                 (execution.completed_at - execution.started_at).total_seconds() * 1000
                 if execution.started_at
@@ -54,7 +53,7 @@ class WorkflowExecutor:
             logger.error(f"Workflow execution failed: {e}", exc_info=True)
             execution.status = ExecutionStatus.FAILED
             execution.error = str(e)
-            execution.completed_at = datetime.utcnow()
+            execution.completed_at = datetime.now(timezone.utc)
 
         return execution
 

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Optional
 from backend.langgraph_engine.supervision.approval_manager import ApprovalManager
 from backend.utils.logger import get_logger
 

@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, Header
+from fastapi import Header
 from typing import Optional
 from backend.utils.logger import get_logger
 

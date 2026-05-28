@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Any, Optional
-from datetime import datetime
+from typing import Optional
+from datetime import datetime, timezone
 from backend.models.execution import Execution, ExecutionStatus
 from backend.langgraph_engine.execution.executor import WorkflowExecutor
 from backend.utils.helpers import generate_id
@@ -38,7 +38,7 @@ class ExecutionService:
         execution = self._executions.get(execution_id)
         if execution and execution.status in (ExecutionStatus.PENDING, ExecutionStatus.RUNNING):
             execution.status = ExecutionStatus.CANCELLED
-            execution.completed_at = datetime.utcnow()
+            execution.completed_at = datetime.now(timezone.utc)
             await self._executor.cancel(execution_id)
             return True
         return False

@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Any, Optional
-from datetime import datetime
+from typing import Optional
+from datetime import datetime, timezone
 from backend.models.workflow import Workflow, WorkflowStatus
 from backend.utils.helpers import generate_id
 from backend.utils.logger import get_logger
@@ -44,7 +44,7 @@ class WorkflowService:
             if field in data:
                 setattr(workflow, field, data[field])
 
-        workflow.updated_at = datetime.utcnow()
+        workflow.updated_at = datetime.now(timezone.utc)
         logger.info(f"Updated workflow: {workflow_id}")
         return workflow
 
@@ -64,7 +64,7 @@ class WorkflowService:
         if not workflow:
             return None
         workflow.nodes.append(node)
-        workflow.updated_at = datetime.utcnow()
+        workflow.updated_at = datetime.now(timezone.utc)
         return workflow
 
     async def add_edge(self, workflow_id: str, edge: dict) -> Optional[Workflow]:
@@ -72,7 +72,7 @@ class WorkflowService:
         if not workflow:
             return None
         workflow.edges.append(edge)
-        workflow.updated_at = datetime.utcnow()
+        workflow.updated_at = datetime.now(timezone.utc)
         return workflow
 
     async def update_status(self, workflow_id: str, status: WorkflowStatus) -> Optional[Workflow]:
@@ -80,5 +80,5 @@ class WorkflowService:
         if not workflow:
             return None
         workflow.status = status
-        workflow.updated_at = datetime.utcnow()
+        workflow.updated_at = datetime.now(timezone.utc)
         return workflow

@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any
-from datetime import datetime
+from datetime import datetime, timezone
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -19,7 +18,7 @@ class MonitoringService:
             "workflow_id": workflow_id,
             "duration_ms": duration_ms,
             "status": status,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
         })
 
     def record_node_execution(self, node_id: str, duration_ms: float, status: str):
@@ -27,14 +26,14 @@ class MonitoringService:
             "node_id": node_id,
             "duration_ms": duration_ms,
             "status": status,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
         })
 
     def record_error(self, error_type: str, message: str):
         self._metrics["errors"].append({
             "type": error_type,
             "message": message,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(timezone.utc),
         })
 
     def get_metrics(self, metric_type: str | None = None) -> dict:
