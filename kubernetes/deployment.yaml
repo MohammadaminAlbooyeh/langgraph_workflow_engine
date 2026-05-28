@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: langgraph-workflow-engine
+  labels:
+    app: langgraph-workflow-engine
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: langgraph-workflow-engine
+  template:
+    metadata:
+      labels:
+        app: langgraph-workflow-engine
+    spec:
+      containers:
+      - name: backend
+        image: langgraph-workflow-engine:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: APP_ENVIRONMENT
+          value: "production"
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: workflow-config
+              key: database_url
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: langgraph-workflow-dashboard
+  labels:
+    app: langgraph-workflow-dashboard
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: langgraph-workflow-dashboard
+  template:
+    metadata:
+      labels:
+        app: langgraph-workflow-dashboard
+    spec:
+      containers:
+      - name: frontend
+        image: langgraph-workflow-dashboard:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "200m"
+            memory: "128Mi"

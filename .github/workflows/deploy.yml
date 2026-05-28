@@ -1,0 +1,18 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker images
+        run: |
+          docker build -t langgraph-workflow-engine:latest .
+          docker build -f Dockerfile.dashboard -t langgraph-workflow-dashboard:latest .
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f kubernetes/

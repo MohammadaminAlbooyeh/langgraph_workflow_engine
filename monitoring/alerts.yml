@@ -1,0 +1,16 @@
+groups:
+  - name: workflow_alerts
+    rules:
+      - alert: HighErrorRate
+        expr: rate(workflow_errors_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High workflow error rate detected"
+      - alert: ExecutionTimeout
+        expr: workflow_execution_duration_seconds > 300
+        labels:
+          severity: warning
+        annotations:
+          summary: "Workflow execution taking too long"

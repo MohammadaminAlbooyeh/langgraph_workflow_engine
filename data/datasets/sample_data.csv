@@ -1,0 +1,5 @@
+id,name,type,status
+1,Hello World,custom,active
+2,Data Pipeline,data_pipeline,draft
+3,Decision Tree,decision_tree,active
+4,Document Processor,document,paused

@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Hello World",
+    "type": "custom",
+    "nodes": [{"id": "input", "type": "input", "name": "Input"}, {"id": "output", "type": "output", "name": "Output"}],
+    "edges": [{"id": "e1", "source_id": "input", "target_id": "output"}]
+  },
+  {
+    "name": "LLM Chat",
+    "type": "custom",
+    "nodes": [
+      {"id": "input", "type": "input", "name": "User Input"},
+      {"id": "llm", "type": "llm", "name": "LLM", "config": {"provider": "openai", "temperature": 0.7}},
+      {"id": "output", "type": "output", "name": "Response"}
+    ],
+    "edges": [
+      {"id": "e1", "source_id": "input", "target_id": "llm"},
+      {"id": "e2", "source_id": "llm", "target_id": "output"}
+    ]
+  },
+  {
+    "name": "Multi-Agent Research",
+    "type": "multi_agent",
+    "nodes": [
+      {"id": "input", "type": "input", "name": "Query"},
+      {"id": "researcher", "type": "agent", "name": "Researcher"},
+      {"id": "writer", "type": "agent", "name": "Writer"},
+      {"id": "output", "type": "output", "name": "Report"}
+    ],
+    "edges": [
+      {"id": "e1", "source_id": "input", "target_id": "researcher"},
+      {"id": "e2", "source_id": "researcher", "target_id": "writer"},
+      {"id": "e3", "source_id": "writer", "target_id": "output"}
+    ]
+  }
+]

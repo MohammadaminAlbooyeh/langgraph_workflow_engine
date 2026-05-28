@@ -1,0 +1,10 @@
+{
+  "dashboard": {
+    "title": "Workflow Metrics",
+    "panels": [
+      { "title": "Executions per Second", "type": "graph", "targets": [{ "expr": "rate(workflow_executions_total[1m])" }] },
+      { "title": "Error Rate", "type": "graph", "targets": [{ "expr": "rate(workflow_errors_total[1m])" }] },
+      { "title": "Execution Duration", "type": "graph", "targets": [{ "expr": "workflow_execution_duration_seconds" }] }
+    ]
+  }
+}
