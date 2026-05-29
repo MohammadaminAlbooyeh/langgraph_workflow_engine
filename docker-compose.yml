@@ -11,8 +11,12 @@ services:
       - APP_ENVIRONMENT=development
       - APP_DEBUG=true
     volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
+      - data_volume:/app/data
+      - logs_volume:/app/logs
+
+volumes:
+  data_volume:
+  logs_volume:
     restart: unless-stopped
 
   frontend:

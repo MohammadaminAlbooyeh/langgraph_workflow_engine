@@ -8,6 +8,15 @@ logger = get_logger(__name__)
 
 
 class NodeExecutor:
+    def __init__(self):
+        self._llm_factory = None
+
+    def _get_llm_factory(self):
+        if self._llm_factory is None:
+            from backend.llm.llm_factory import LLMFactory
+            self._llm_factory = LLMFactory()
+        return self._llm_factory
+
     async def execute(
         self,
         node_id: str,
@@ -61,12 +70,35 @@ class NodeExecutor:
         return await handler(node_id, config, inputs, context)
 
     async def _handle_llm(self, node_id: str, config: dict, inputs: dict, context: dict) -> Any:
-        prompt = config.get("prompt_template", "")
-        formatted = prompt.format(**inputs) if inputs else prompt
-        return {"response": f"[LLM response for: {formatted[:50]}...]", "provider": config.get("provider", "openai")}
+        provider = config.get("provider")
+        prompt_template = config.get("prompt_template", "")
+        system_prompt = config.get("system_prompt", "You are a helpful AI assistant.")
+        formatted = prompt_template.format(**inputs) if inputs else prompt_template
+
+        llm = self._get_llm_factory().create(provider)
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        if formatted:
+            messages.append({"role": "user", "content": formatted})
+        elif inputs:
+            messages.append({"role": "user", "content": str(inputs)})
+
+        response = await llm.invoke(messages)
+        return {"response": response, "provider": provider or "openai"}
 
     async def _handle_agent(self, node_id: str, config: dict, inputs: dict, context: dict) -> Any:
-        return {"agent_output": f"[Agent {node_id} processed]", "reasoning": "Simulated agent reasoning"}
+        provider = config.get("provider")
+        system_prompt = config.get("system_prompt", "You are a helpful AI assistant.")
+        user_input = str(inputs.get("input", inputs))
+
+        llm = self._get_llm_factory().create(provider)
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_input},
+        ]
+        response = await llm.invoke(messages)
+        return {"agent_output": response, "reasoning": f"Processed by {provider or 'default'} LLM"}
 
     async def _handle_transformer(self, node_id: str, config: dict, inputs: dict, context: dict) -> Any:
         return {"transformed": inputs}

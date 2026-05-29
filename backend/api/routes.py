@@ -1,5 +1,5 @@
 from __future__ import annotations
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from backend.api.schemas import (
     WorkflowCreate, WorkflowUpdate, WorkflowResponse,
     ExecutionCreate, ExecutionResponse,
@@ -13,6 +13,8 @@ from backend.services.monitoring_service import MonitoringService
 from backend.services.orchestration_service import OrchestrationService
 from backend.utils.logger import get_logger
 from backend.models.workflow import WorkflowStatus
+from backend.api.websocket_manager import manager
+from backend.api.metrics import metrics_endpoint
 
 logger = get_logger(__name__)
 
@@ -120,6 +122,16 @@ async def get_execution(execution_id: str):
     return _execution_to_response(execution)
 
 
+@router.websocket("/ws/{workflow_id}")
+async def workflow_websocket(websocket: WebSocket, workflow_id: str):
+    await manager.connect(workflow_id, websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(workflow_id, websocket)
+
+
 @router.post("/executions/{execution_id}/cancel", response_model=MessageResponse)
 async def cancel_execution(execution_id: str):
     cancelled = await execution_service.cancel(execution_id)
@@ -193,6 +205,11 @@ async def get_metrics(type: str | None = None):
 @router.get("/monitoring/summary", response_model=dict)
 async def get_summary():
     return monitoring_service.get_summary()
+
+
+@router.get("/metrics")
+async def get_metrics():
+    return await metrics_endpoint()
 
 
 @router.get("/health", response_model=dict)

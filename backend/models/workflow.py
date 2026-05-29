@@ -1,4 +1,5 @@
 from __future__ import annotations
+import uuid
 from enum import Enum
 from typing import Optional, Any
 from datetime import datetime, timezone
@@ -23,7 +24,7 @@ class WorkflowType(str, Enum):
 
 
 class Workflow(BaseModel):
-    id: str = Field(default_factory=lambda: f"wf_{datetime.now(timezone.utc).timestamp()}")
+    id: str = Field(default_factory=lambda: f"wf_{uuid.uuid4().hex[:12]}")
     name: str
     description: Optional[str] = None
     type: WorkflowType = WorkflowType.CUSTOM

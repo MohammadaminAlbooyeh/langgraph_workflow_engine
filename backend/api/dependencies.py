@@ -1,11 +1,4 @@
-from fastapi import Header
-from typing import Optional
-from backend.utils.logger import get_logger
+from fastapi import Depends
+from backend.api.auth import verify_api_key as _verify_api_key
 
-logger = get_logger(__name__)
-
-
-async def verify_api_key(authorization: Optional[str] = Header(None)):
-    if authorization:
-        return authorization
-    return None
+verify_api_key = Depends(_verify_api_key)

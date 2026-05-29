@@ -49,18 +49,34 @@ class GraphBuilder:
         return handler
 
     def _create_condition_fn(self, edge: Edge):
+        import re
+
         def condition(state: dict) -> str:
             if not edge.condition:
                 return edge.target_id
             field_val = state.get(edge.condition.field)
             matched = False
-            if edge.condition.operator == "equals":
-                matched = field_val == edge.condition.value
-            elif edge.condition.operator == "contains":
-                matched = edge.condition.value in str(field_val)
-            elif edge.condition.operator == "gt":
-                matched = field_val is not None and field_val > edge.condition.value
-            elif edge.condition.operator == "exists":
+            op = edge.condition.operator
+            val = edge.condition.value
+            if op == "equals":
+                matched = field_val == val
+            elif op == "not_equals":
+                matched = field_val != val
+            elif op == "contains":
+                matched = val in str(field_val)
+            elif op == "gt":
+                matched = field_val is not None and field_val > val
+            elif op == "gte":
+                matched = field_val is not None and field_val >= val
+            elif op == "lt":
+                matched = field_val is not None and field_val < val
+            elif op == "lte":
+                matched = field_val is not None and field_val <= val
+            elif op == "in":
+                matched = field_val in val if isinstance(val, (list, tuple)) else False
+            elif op == "matches":
+                matched = bool(re.match(str(val), str(field_val)))
+            elif op == "exists":
                 matched = field_val is not None
             return edge.target_id if matched else END
         return condition

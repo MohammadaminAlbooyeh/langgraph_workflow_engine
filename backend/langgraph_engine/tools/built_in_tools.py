@@ -1,4 +1,6 @@
 from __future__ import annotations
+import ast
+import operator
 from typing import Any
 from datetime import datetime, timezone
 
@@ -7,10 +9,38 @@ def current_datetime() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _safe_eval(expression: str) -> float:
+    allowed_ops = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.Pow: operator.pow,
+        ast.USub: operator.neg,
+        ast.Mod: operator.mod,
+        ast.FloorDiv: operator.floordiv,
+    }
+
+    def _eval(node):
+        if isinstance(node, ast.Expression):
+            return _eval(node.body)
+        elif isinstance(node, ast.Constant):
+            if isinstance(node.value, (int, float)):
+                return node.value
+            raise ValueError(f"Unsupported constant: {node.value}")
+        elif isinstance(node, ast.UnaryOp):
+            return allowed_ops[type(node.op)](_eval(node.operand))
+        elif isinstance(node, ast.BinOp):
+            return allowed_ops[type(node.op)](_eval(node.left), _eval(node.right))
+        else:
+            raise ValueError(f"Unsupported expression: {type(node).__name__}")
+
+    parsed = ast.parse(expression, mode="eval")
+    return _eval(parsed.body)
+
+
 def calculate(expression: str) -> float:
-    safe_globals = {"__builtins__": {}}
-    safe_locals = {}
-    return eval(expression, safe_globals, safe_locals)
+    return _safe_eval(expression)
 
 
 def format_text(text: str, case: str = "lower") -> str:

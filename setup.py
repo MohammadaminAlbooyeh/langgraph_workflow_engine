@@ -15,6 +15,7 @@ setup(
         "pydantic-settings==2.1.0",
         "sqlalchemy==2.0.23",
         "alembic==1.13.0",
+        "aiosqlite==0.19.0",
         "asyncpg==0.29.0",
         "redis==5.0.1",
         "celery==5.3.4",
@@ -30,6 +31,7 @@ setup(
         "numpy==1.26.2",
         "python-dotenv==1.0.0",
         "pyyaml==6.0.1",
+        "croniter==2.0.1",
         "structlog==24.1.0",
     ],
     extras_require={

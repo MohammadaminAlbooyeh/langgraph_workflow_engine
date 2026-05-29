@@ -1,17 +1,18 @@
 from __future__ import annotations
-from typing import Optional
-from backend.llm.openai_llm import OpenAILLM
-from backend.llm.claude_llm import ClaudeLLM
-from backend.llm.local_llm import LocalLLM
+from typing import Optional, Any
 from backend.llm.llm_config import LLMConfigModel
 from config import llm_config
 
 
 class LLMFactory:
-    _instances: dict[str, OpenAILLM | ClaudeLLM | LocalLLM] = {}
+    _instances: dict[str, Any] = {}
 
     @classmethod
     def create(cls, provider: Optional[str] = None, config: Optional[LLMConfigModel] = None):
+        from backend.llm.openai_llm import OpenAILLM
+        from backend.llm.claude_llm import ClaudeLLM
+        from backend.llm.local_llm import LocalLLM
+
         provider = provider or llm_config.default_provider
         cache_key = f"{provider}:{id(config)}"
 

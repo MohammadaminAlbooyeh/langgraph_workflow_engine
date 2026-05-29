@@ -1,9 +1,21 @@
 import pytest
+from unittest.mock import patch, AsyncMock
 from backend.langgraph_engine.core.node_executor import NodeExecutor
 
 
+@pytest.fixture
+def mock_llm_factory():
+    from unittest.mock import MagicMock
+    mock_llm = AsyncMock()
+    mock_llm.invoke.return_value = "Mocked LLM response"
+    factory = MagicMock()
+    factory.create.return_value = mock_llm
+    with patch("backend.langgraph_engine.core.node_executor.NodeExecutor._get_llm_factory", return_value=factory):
+        yield
+
+
 @pytest.mark.asyncio
-async def test_execute_llm_node():
+async def test_execute_llm_node(mock_llm_factory):
     executor = NodeExecutor()
     config = {"type": "llm", "name": "test_llm", "provider": "openai", "prompt_template": "Hello {name}"}
     result = await executor.execute("n1", config, {"name": "World"})
@@ -28,7 +40,7 @@ async def test_execute_output_node():
 
 
 @pytest.mark.asyncio
-async def test_execute_agent_node():
+async def test_execute_agent_node(mock_llm_factory):
     executor = NodeExecutor()
     config = {"type": "agent", "name": "test_agent"}
     result = await executor.execute("n1", config, {})

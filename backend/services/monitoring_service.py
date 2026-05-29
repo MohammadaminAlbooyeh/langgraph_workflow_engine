@@ -1,5 +1,10 @@
 from __future__ import annotations
 from datetime import datetime, timezone
+from backend.api.metrics import (
+    record_workflow_execution,
+    record_node_execution,
+    record_error as prometheus_record_error,
+)
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -20,6 +25,7 @@ class MonitoringService:
             "status": status,
             "timestamp": datetime.now(timezone.utc),
         })
+        record_workflow_execution(status, duration_ms)
 
     def record_node_execution(self, node_id: str, duration_ms: float, status: str):
         self._metrics["node_executions"].append({
@@ -28,6 +34,7 @@ class MonitoringService:
             "status": status,
             "timestamp": datetime.now(timezone.utc),
         })
+        record_node_execution("unknown", status, duration_ms)
 
     def record_error(self, error_type: str, message: str):
         self._metrics["errors"].append({
@@ -35,6 +42,7 @@ class MonitoringService:
             "message": message,
             "timestamp": datetime.now(timezone.utc),
         })
+        prometheus_record_error(error_type)
 
     def get_metrics(self, metric_type: str | None = None) -> dict:
         if metric_type:
