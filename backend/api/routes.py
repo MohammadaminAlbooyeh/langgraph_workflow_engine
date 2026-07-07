@@ -29,7 +29,7 @@ orchestration_service = OrchestrationService()
 
 @router.post("/workflows", response_model=WorkflowResponse, status_code=201)
 async def create_workflow(data: WorkflowCreate):
-    workflow = await workflow_service.create(data.dict())
+    workflow = await workflow_service.create(data.model_dump())
     return _workflow_to_response(workflow)
 
 
@@ -49,7 +49,7 @@ async def get_workflow(workflow_id: str):
 
 @router.put("/workflows/{workflow_id}", response_model=WorkflowResponse)
 async def update_workflow(workflow_id: str, data: WorkflowUpdate):
-    workflow = await workflow_service.update(workflow_id, data.dict(exclude_unset=True))
+    workflow = await workflow_service.update(workflow_id, data.model_dump(exclude_unset=True))
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
     return _workflow_to_response(workflow)
@@ -64,7 +64,7 @@ async def delete_workflow(workflow_id: str):
 
 @router.post("/workflows/{workflow_id}/nodes", response_model=WorkflowResponse)
 async def add_node(workflow_id: str, node: NodeCreate):
-    workflow = await workflow_service.add_node(workflow_id, node.dict())
+    workflow = await workflow_service.add_node(workflow_id, node.model_dump())
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
     return _workflow_to_response(workflow)
@@ -72,7 +72,7 @@ async def add_node(workflow_id: str, node: NodeCreate):
 
 @router.post("/workflows/{workflow_id}/edges", response_model=WorkflowResponse)
 async def add_edge(workflow_id: str, edge: EdgeCreate):
-    workflow = await workflow_service.add_edge(workflow_id, edge.dict())
+    workflow = await workflow_service.add_edge(workflow_id, edge.model_dump())
     if not workflow:
         raise HTTPException(status_code=404, detail="Workflow not found")
     return _workflow_to_response(workflow)
@@ -242,7 +242,7 @@ def _execution_to_response(e):
         inputs=e.inputs,
         outputs=e.outputs,
         current_node_id=e.current_node_id,
-        node_results=[r.dict() if hasattr(r, "dict") else r for r in e.node_results],
+        node_results=[r.model_dump() if hasattr(r, "dict") else r for r in e.node_results],
         error=e.error,
         started_at=e.started_at.isoformat() if e.started_at and hasattr(e.started_at, "isoformat") else str(e.started_at) if e.started_at else None,
         completed_at=e.completed_at.isoformat() if e.completed_at and hasattr(e.completed_at, "isoformat") else str(e.completed_at) if e.completed_at else None,
