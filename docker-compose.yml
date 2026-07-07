@@ -13,10 +13,6 @@ services:
     volumes:
       - data_volume:/app/data
       - logs_volume:/app/logs
-
-volumes:
-  data_volume:
-  logs_volume:
     restart: unless-stopped
 
   frontend:
@@ -28,3 +24,7 @@ volumes:
     depends_on:
       - backend
     restart: unless-stopped
+
+volumes:
+  data_volume:
+  logs_volume:
